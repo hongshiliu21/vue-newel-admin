@@ -230,9 +230,7 @@ export default {
           "/admin/logout",
           {},
           {
-            headers: {
-              token: this.user.token,
-            },
+            token: true,
           }
         )
         .then((res) => {
