@@ -31,9 +31,10 @@
                     type="primary"
                     size="medium"
                     class="w-100"
+                    :loading="loading"
                     @click="handleSubmit('form')"
                   >
-                    立即登录
+                    {{ loading ? "登录中..." : "立即登录" }}
                   </el-button>
                 </el-form-item>
               </el-form>
@@ -51,6 +52,7 @@ import axios from "axios";
 export default {
   data() {
     return {
+      loading: false,
       form: {
         username: "",
         password: "",
@@ -72,25 +74,18 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (!valid) return;
         //提交表单  // 用户名：admin 密码：admin
-        axios
-          .post("/admin/login", this.form)
-          .then((res) => {
-            console.log(res);
-            // 1、存储到vuex
-            console.log("登录");
-            console.log(res.data.data);
-            this.$store.commit("login", res.data.data);
-            // 2、存储到本地存储
-            // 3、成功提示
-            this.$message.success("登录成功！");
-            // 4、跳转后台首页
-            this.$router.push({ name: "index" });
-          })
-          .catch((err) => {
-            if (err.response.data && err.response.data.errorCode) {
-              this.$message.error(err.response.data.msg);
-            }
-          });
+        this.loading = true;
+        axios.post("/admin/login", this.form).then((res) => {
+          // 1、存储到vuex
+          this.$store.commit("login", res.data.data);
+          // 2、存储到本地存储
+          // 3、成功提示
+          this.$message.success("登录成功！");
+          // 4、跳转后台首页
+          this.$router.push({ name: "index" });
+        }).catch(()=>{
+          this.loading = false;
+        });
       });
     },
   },

@@ -171,8 +171,6 @@ export default {
     this.getRouterBran();
     // 初始化选中菜单
     this.__initNavBar();
-    console.log("123");
-    console.log(this.user);
   },
   methods: {
     __initNavBar() {
@@ -195,7 +193,6 @@ export default {
           title: item.meta.title,
         });
       });
-      console.log(arr);
       if (arr.length > 0) {
         arr.unshift({ name: "index", path: "/index", title: "后台首页" });
       }
@@ -222,9 +219,6 @@ export default {
     // 左侧菜单导航
     slideSelect(key, keyPath) {
       this.slideMenuActive = key;
-      console.log("slideSelect");
-      console.log(key);
-      console.log(keyPath);
       // 跳转到指定页面
       this.$router.push({
         name: this.slideMenus[key].pathname,
@@ -251,15 +245,12 @@ export default {
           });
         })
         .catch((err) => {
-          if (err.response.data && err.response.data.errorCode) {
-            this.$message.error(err.response.data.msg);
-            //清楚状态和存储
-            this.$store.commit("logout");
-            // 返回登录页面
-            this.$router.push({
-              name: "login",
-            });
-          }
+          //清楚状态和存储
+          this.$store.commit("logout");
+          // 返回登录页面
+          this.$router.push({
+            name: "login",
+          });
         });
     },
   },
