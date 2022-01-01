@@ -1,9 +1,16 @@
 <template>
   <div>
     <el-container
-      style="position: absolute;left: 0;top: 0;bottom: 0;right: 0; overflow: hidden;"
+      style="
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        overflow: hidden;
+      "
     >
-      <el-header class="d-flex align-items-center" style="background: #545c64;">
+      <el-header class="d-flex align-items-center" style="background: #545c64">
         <a class="h5 text-light mb-0 mr-auto">{{ $conf.logo }}</a>
         <el-menu
           :default-active="navBar.active"
@@ -23,22 +30,26 @@
             <template slot="title">
               <el-avatar
                 size="small"
-                src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"
+                :src="
+                  user.user.avatar
+                    ? user.user.avatar
+                    : 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
+                "
               ></el-avatar>
-              summer
+              {{ user.user.username }}
             </template>
             <el-menu-item index="100-1">修改</el-menu-item>
             <el-menu-item index="100-2">退出</el-menu-item>
           </el-submenu>
         </el-menu>
       </el-header>
-      <el-container style="height: 100%;">
+      <el-container style="height: 100%">
         <!-- 侧边布局 -->
         <el-aside width="200px">
           <el-menu
             default-active="0"
             @select="slideSelect"
-            style="height: 100%;"
+            style="height: 100%"
           >
             <el-menu-item
               :index="index | numToString"
@@ -54,13 +65,13 @@
         <!-- 主布局 -->
         <el-main
           class="bg-light position-relative"
-          style="padding-bottom: 60px;"
+          style="padding-bottom: 60px"
         >
           <!-- 面包屑导航 -->
           <div
             class="border-bottom mb-3 bg-white"
             v-if="bran.length > 0"
-            style="padding: 20px;margin: -20px;"
+            style="padding: 20px; margin: -20px"
           >
             <el-breadcrumb separator-class="el-icon-arrow-right">
               <el-breadcrumb-item
@@ -86,15 +97,17 @@
           <!-- 返回顶部 -->
           <el-backtop target=".el-main" :bottom="100">
             <div
-              style="{
-        height: 100%;
-        width: 100%;
-        background-color: #f2f5f6;
-        box-shadow: 0 0 6px rgba(0,0,0, .12);
-        text-align: center;
-        line-height: 40px;
-        color: #1989fa;
-      }"
+              style="
+                 {
+                  height: 100%;
+                  width: 100%;
+                  background-color: #f2f5f6;
+                  box-shadow: 0 0 6px rgba(0, 0, 0, 0.12);
+                  text-align: center;
+                  line-height: 40px;
+                  color: #1989fa;
+                }
+              "
             >
               UP
             </div>
@@ -107,13 +120,16 @@
 
 <script>
 import common from "@/common/mixins/common.js";
+import { mapState } from "vuex";
+import axios from "axios";
+
 export default {
   name: "layout",
   mixins: [common],
   data() {
     return {
       navBar: {},
-      bran: []
+      bran: [],
     };
   },
   watch: {
@@ -123,11 +139,11 @@ export default {
         "navActive",
         JSON.stringify({
           top: this.navBar.active || "0",
-          left: this.slideMenuActive || "0"
+          left: this.slideMenuActive || "0",
         })
       );
       this.getRouterBran();
-    }
+    },
   },
   computed: {
     // 字段代码貌似没用
@@ -138,14 +154,15 @@ export default {
       set(val) {
         this.navBar.list[this.navBar.active].subActive = val;
       },
-      heightH: function() {
-        const windowH = Number(document.documentElement.clientHeight) + "px";
-        return windowH;
-      }
+      // heightH: function () {
+      //   const windowH = Number(document.documentElement.clientHeight) + "px";
+      //   return windowH;
+      // },
     },
     slideMenus() {
       return this.navBar.list[this.navBar.active].submenu || [];
-    }
+    },
+    ...mapState(["user"]),
   },
   created() {
     // 初始化菜单
@@ -154,6 +171,8 @@ export default {
     this.getRouterBran();
     // 初始化选中菜单
     this.__initNavBar();
+    console.log("123");
+    console.log(this.user);
   },
   methods: {
     __initNavBar() {
@@ -165,15 +184,15 @@ export default {
       }
     },
     getRouterBran() {
-      let b = this.$route.matched.filter(v => v.name),
+      let b = this.$route.matched.filter((v) => v.name),
         arr = [];
-      b.forEach(item => {
+      b.forEach((item) => {
         // 过滤index和layout
         if (item.name == "index" || item.name == "layout") return;
         arr.push({
           name: item.name,
           path: item.path,
-          title: item.meta.title
+          title: item.meta.title,
         });
       });
       console.log(arr);
@@ -184,12 +203,19 @@ export default {
     },
     // 顶部导航
     handleSelect(key, keyPath) {
+      if (key === "100-1") {
+        return console.log("修改资料");
+      }
+      if (key === "100-2") {
+        // 退出登录
+        return this.logout();
+      }
       this.navBar.active = key;
       // 默认选中跳转到当前激活
       this.slideMenuActive = "0";
       if (this.slideMenus.length) {
         this.$router.push({
-          name: this.slideMenus[this.slideMenuActive].pathname
+          name: this.slideMenus[this.slideMenuActive].pathname,
         });
       }
     },
@@ -201,10 +227,42 @@ export default {
       console.log(keyPath);
       // 跳转到指定页面
       this.$router.push({
-        name: this.slideMenus[key].pathname
+        name: this.slideMenus[key].pathname,
       });
-    }
-  }
+    },
+    logout() {
+      axios
+        .post(
+          "/admin/logout",
+          {},
+          {
+            headers: {
+              token: this.user.token,
+            },
+          }
+        )
+        .then((res) => {
+          this.$message.success("退出成功!");
+          //清楚状态和存储
+          this.$store.commit("logout");
+          // 返回登录页面
+          this.$router.push({
+            name: "login",
+          });
+        })
+        .catch((err) => {
+          if (err.response.data && err.response.data.errorCode) {
+            this.$message.error(err.response.data.msg);
+            //清楚状态和存储
+            this.$store.commit("logout");
+            // 返回登录页面
+            this.$router.push({
+              name: "login",
+            });
+          }
+        });
+    },
+  },
 };
 </script>
 

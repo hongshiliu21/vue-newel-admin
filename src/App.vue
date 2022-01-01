@@ -11,6 +11,10 @@ export default {
   data() {
     return {};
   },
+  created(){
+    // 初始化用户信息
+    this.$store.commit("initUser");
+  },
   methods: {}
 };
 </script>
