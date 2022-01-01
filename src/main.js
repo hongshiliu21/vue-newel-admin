@@ -8,15 +8,10 @@ import $conf from "./common/config/config.js";
 import "./assets/js/base";
 import "../src/assets/css/bootstrap.min.css";
 import components from "./components/components"; // 引入公共组件
-// import zrDrawHtml from "zr-draw-html";
-// import "zr-draw-html/lib/zr-draw-html.css";
-import zrDrawHtml from "zr-draw-html/lib/zr-draw-html.common.js";
-import "zr-draw-html/lib/zr-draw-html.css";
 
 Vue.prototype.$conf = $conf;
 Vue.config.productionTip = false;
 
-Vue.use(zrDrawHtml);
 Vue.use(components);
 new Vue({
   router,
