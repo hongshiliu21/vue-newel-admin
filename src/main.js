@@ -14,6 +14,32 @@ import {
 import axios from "axios";
 
 
+let loading = null;
+let requestCount = 0; // 请求数
+
+// 显示loading
+function showLoading() {
+  if (requestCount === 0) {
+    loading = Message({
+      message: '加载中...',
+      duration: 0
+    });
+  }
+  requestCount++;
+}
+
+
+// 隐藏loading
+function hideLoading() {
+  if (requestCount > 0) {
+    requestCount--;
+
+  }
+  if (loading && requestCount === 0) {
+    loading.close();
+  }
+}
+
 // 添加请求拦截器
 axios.interceptors.request.use(config => {
   // 在发送请求之前做些什么
@@ -21,21 +47,30 @@ axios.interceptors.request.use(config => {
   if (config.token) {
     config.headers["token"] = token;
   }
+  console.log("config");
+  console.log(config);
+  if (config.loading) { // 为真
+    showLoading();
+  }
+
   return config;
 }, error => {
   // 对请求错误做些什么
+  showLoading();
   return Promise.reject(error);
 });
 
 // 添加响应拦截器
 axios.interceptors.response.use(response => {
   // 对响应数据做点什么
+  hideLoading();
   return response;
 }, err => {
   // 对响应错误做点什么
   if (err.response && err.response.data && err.response.data.errorCode) {
     Message.error(err.response.data.msg);
   }
+  hideLoading();
   return Promise.reject(err);
 });
 

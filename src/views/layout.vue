@@ -231,10 +231,11 @@ export default {
           {},
           {
             token: true,
+            loading: true,
           }
         )
         .then((res) => {
-          this.$message.success("退出成功!");
+          // this.$message.success("退出成功!");
           //清楚状态和存储
           this.$store.commit("logout");
           // 返回登录页面
