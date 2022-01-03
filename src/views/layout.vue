@@ -31,12 +31,12 @@
               <el-avatar
                 size="small"
                 :src="
-                  user.user.avatar
-                    ? user.user.avatar
+                  user.avatar
+                    ? user.avatar
                     : 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
                 "
               ></el-avatar>
-              {{ user.user.username }}
+              {{ user.username }}
             </template>
             <el-menu-item index="100-1">修改</el-menu-item>
             <el-menu-item index="100-2">退出</el-menu-item>
@@ -47,7 +47,7 @@
         <!-- 侧边布局 -->
         <el-aside width="200px">
           <el-menu
-            default-active="0"
+            :default-active="slideMenuActive"
             @select="slideSelect"
             style="height: 100%"
           >
@@ -82,16 +82,6 @@
               >
             </el-breadcrumb>
           </div>
-
-          <!-- 主内容 -->
-          <!-- <iframe
-            style="width:100%;"
-            :height="heightH"
-            id="mobsf"
-            scrolling="no"
-            frameborder="0"
-            sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
-          ></iframe> -->
           <router-view></router-view>
 
           <!-- 返回顶部 -->
@@ -120,7 +110,7 @@
 
 <script>
 import common from "@/common/mixins/common.js";
-import { mapState } from "vuex";
+import { mapGetters } from "vuex";
 import axios from "axios";
 
 export default {
@@ -128,7 +118,7 @@ export default {
   mixins: [common],
   data() {
     return {
-      navBar: {},
+      // navBar: {},
       bran: [],
     };
   },
@@ -149,24 +139,25 @@ export default {
     // 字段代码貌似没用
     slideMenuActive: {
       get() {
-        return this.navBar.list[this.navBar.active].subActive || "0";
+        let item = this.navBar.list[this.navBar.active];
+        return item ? item.subActive : "0";
       },
       set(val) {
-        this.navBar.list[this.navBar.active].subActive = val;
+        let item = this.navBar.list[this.navBar.active];
+        if (item) {
+          item.subActive = val;
+        }
       },
-      // heightH: function () {
-      //   const windowH = Number(document.documentElement.clientHeight) + "px";
-      //   return windowH;
-      // },
     },
     slideMenus() {
-      return this.navBar.list[this.navBar.active].submenu || [];
+      let item = this.navBar.list[this.navBar.active];
+      return item ? item.submenu : [];
     },
-    ...mapState(["user"]),
+    ...mapGetters(["user", "navBar"]),
   },
   created() {
     // 初始化菜单
-    this.navBar = this.$conf.navBar;
+    // this.navBar = this.$conf.navBar;
     // 获取面包屑导航
     this.getRouterBran();
     // 初始化选中菜单

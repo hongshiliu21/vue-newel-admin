@@ -3,12 +3,16 @@ import Vuex from "vuex"
 
 import goods_create from "./modules/goods_create.js"
 import user from "./modules/user.js"
+import menu from "./modules/menu"
+import getters from "./getters/index";
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-	modules:{
+	modules: {
 		goods_create,
-		user
-	}
+		user,
+		menu
+	},
+	getters
 })

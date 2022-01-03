@@ -47,8 +47,7 @@ axios.interceptors.request.use(config => {
   if (config.token) {
     config.headers["token"] = token;
   }
-  console.log("config");
-  console.log(config);
+  // 显示loading
   if (config.loading) { // 为真
     showLoading();
   }
@@ -56,13 +55,15 @@ axios.interceptors.request.use(config => {
   return config;
 }, error => {
   // 对请求错误做些什么
-  showLoading();
+  // 隐藏loading
+  hideLoading();
   return Promise.reject(error);
 });
 
 // 添加响应拦截器
 axios.interceptors.response.use(response => {
   // 对响应数据做点什么
+  // 隐藏loading
   hideLoading();
   return response;
 }, err => {
@@ -70,6 +71,7 @@ axios.interceptors.response.use(response => {
   if (err.response && err.response.data && err.response.data.errorCode) {
     Message.error(err.response.data.msg);
   }
+  // 隐藏loading
   hideLoading();
   return Promise.reject(err);
 });

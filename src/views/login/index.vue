@@ -75,17 +75,22 @@ export default {
         if (!valid) return;
         //提交表单  // 用户名：admin 密码：admin
         this.loading = true;
-        axios.post("/admin/login", this.form).then((res) => {
-          // 1、存储到vuex
-          this.$store.commit("login", res.data.data);
-          // 2、存储到本地存储
-          // 3、成功提示
-          this.$message.success("登录成功！");
-          // 4、跳转后台首页
-          this.$router.push({ name: "index" });
-        }).catch(()=>{
-          this.loading = false;
-        });
+        axios
+          .post("/admin/login", this.form)
+          .then((res) => {
+            // 1、存储到vuex
+            this.$store.commit("login", res.data.data);
+            // 2、存储到本地存储
+            // 生成后台菜单
+            this.$store.commit("createNavBar", res.data.data.tree);
+            // 3、成功提示
+            this.$message.success("登录成功！");
+            // 4、跳转后台首页
+            this.$router.push({ name: "index" });
+          })
+          .catch(() => {
+            this.loading = false;
+          });
       });
     },
   },
