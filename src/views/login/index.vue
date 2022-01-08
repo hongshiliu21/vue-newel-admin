@@ -78,11 +78,19 @@ export default {
         axios
           .post("/admin/login", this.form)
           .then((res) => {
+            let data = res.data.data;
             // 1、存储到vuex
-            this.$store.commit("login", res.data.data);
+            this.$store.commit("login", data);
             // 2、存储到本地存储
+            // 存储权限规则
+            if (data.role && data.role.rules) {
+              window.sessionStorage.setItem(
+                "rules",
+                JSON.stringify(data.role.rules)
+              );
+            }
             // 生成后台菜单
-            this.$store.commit("createNavBar", res.data.data.tree);
+            this.$store.commit("createNavBar", data.tree);
             // 3、成功提示
             this.$message.success("登录成功！");
             // 4、跳转后台首页

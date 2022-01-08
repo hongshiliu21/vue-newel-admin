@@ -24,6 +24,17 @@ router.beforeEach((to, from, next) => {
                 name: from.name ? from.name : "index"
             })
         }
+
+        // 其他验证...
+        let rules = window.sessionStorage.getItem("rules");
+        rules = rules ? JSON.parse(rules) : [];
+        console.log("rules");
+        console.log(rules);
+        let _index = rules.findIndex(item => {
+            return item.rule_id > 0 && item.desc === to.name   //item.rule_id > 0 表示是父接点
+        });
+
+        console.log("_index", _index);
         next(); //放行
     } else {
         // 跳转到登录页验证

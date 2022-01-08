@@ -91,6 +91,16 @@ export default {
 			});
 			state.navBar.list = list;
 			window.sessionStorage.setItem("navBar", JSON.stringify(state.navBar));
+		},
+		
+		// 初始化菜单
+		initNavBar(state) {
+			let navBar = window.sessionStorage.getItem("navBar");
+			navBar = navBar ? JSON.parse(navBar) : {
+				active: "0",
+				list: []
+			};
+			state.navBar = navBar;
 		}
 	},
 	actions: {
