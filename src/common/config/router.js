@@ -4,28 +4,42 @@
  * 二、例如：shop/list，默认生成name为shop_list（如果结尾为index，例如shop/index则是shop）
  * 三、填写后不会自动生成
  * **/
-let routes = [
-  {
+let routes = [{
     path: "/",
     name: "layout",
-    redirect: { name: "index" },
+    redirect: {
+      name: "index"
+    },
     component: "layout",
-    children: [
-    //  {
-    //     meta: { title: "测试" },
-    //     component: "index/test"
-    //   },
-      {
-        meta: { title: "后台首页" },
+    children: [{
+        meta: {
+          title: "后台首页"
+        },
         component: "index/index"
       },
       {
-        meta: { title: "商品列表" },
+        meta: {
+          title: "商品列表"
+        },
         component: "shop/goods/list"
       },
       {
-        meta: { title: "相册管理" },
+        meta: {
+          title: "相册管理"
+        },
         component: "image/index"
+      },
+      {
+        meta: {
+          title: '商品类型管理'
+        },
+        component: 'shop/type/list'
+      },
+      {
+        meta: {
+          title: "404错误"
+        },
+        component: "error/404"
       }
     ]
   },
@@ -33,13 +47,15 @@ let routes = [
     component: "login/index"
   },
   {
-    path: "*",
-    redirect: { name: "index_test" }
+    path: '*',
+    redirect: {
+      name: 'index'
+    },
   }
 ];
 
 // 获取路由信息方法
-let getRoutes = function() {
+let getRoutes = function () {
   // 自动生成路由
   createRoute(routes);
   return routes;

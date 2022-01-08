@@ -48,6 +48,7 @@
 
 <script>
 import axios from "axios";
+import { mapGetters } from "vuex";
 
 export default {
   data() {
@@ -68,6 +69,9 @@ export default {
         password: [{ required: true, message: "请输入密码", trigger: "blur" }],
       },
     };
+  },
+  computed: {
+    ...mapGetters(["adminIndex"]),
   },
   methods: {
     handleSubmit(formName) {
@@ -94,7 +98,8 @@ export default {
             // 3、成功提示
             this.$message.success("登录成功！");
             // 4、跳转后台首页
-            this.$router.push({ name: "index" });
+            // this.$router.push({ name: "index" });
+            this.$router.push({ name: this.adminIndex });
           })
           .catch(() => {
             this.loading = false;

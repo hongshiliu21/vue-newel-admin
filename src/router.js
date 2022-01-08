@@ -26,15 +26,20 @@ router.beforeEach((to, from, next) => {
         }
 
         // 其他验证...
-        let rules = window.sessionStorage.getItem("rules");
-        rules = rules ? JSON.parse(rules) : [];
-        console.log("rules");
-        console.log(rules);
-        let _index = rules.findIndex(item => {
-            return item.rule_id > 0 && item.desc === to.name   //item.rule_id > 0 表示是父接点
-        });
+        if (to.name !== "error_404") {
+            let rules = window.sessionStorage.getItem("rules");
+            rules = rules ? JSON.parse(rules) : [];
+            let _index = rules.findIndex(item => {
+                return item.rule_id > 0 && item.desc === to.name //item.rule_id > 0 表示是父接点
+            });
 
-        console.log("_index", _index);
+            if (_index === -1) {
+                Vue.prototype.$message.error("你当前没有访问该页面的权限，请联系管理员！");
+                return next({
+                    name: from.name ? from.name : 'error_404'
+                });
+            }
+        }
         next(); //放行
     } else {
         // 跳转到登录页验证

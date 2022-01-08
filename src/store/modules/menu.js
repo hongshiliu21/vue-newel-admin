@@ -6,7 +6,16 @@ export default {
 		}
 	},
 	getters: {
-
+		// 登录跳转，可以根据用户的权限跳转到对应的页面
+		adminIndex(state) {
+			if (state.navBar.list.length === 0) {
+				return "error_404";
+			}
+			let item = state.navBar.list[0].submenu[0];
+			if (item) {
+				return item.pathname
+			}
+		}
 	},
 	mutations: {
 		/**
@@ -92,7 +101,7 @@ export default {
 			state.navBar.list = list;
 			window.sessionStorage.setItem("navBar", JSON.stringify(state.navBar));
 		},
-		
+
 		// 初始化菜单
 		initNavBar(state) {
 			let navBar = window.sessionStorage.getItem("navBar");

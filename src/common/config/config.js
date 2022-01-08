@@ -7,12 +7,6 @@ export default {
         name: "首页",
         subActive: "0",
         submenu: [
-          // {
-          //   icon: "el-icon-s-home",
-          //   name: "测试",
-          //   pathname: "index_test",
-          //   pathType: 2
-          // },
           {
             icon: "el-icon-s-home",
             name: "后台首页",
