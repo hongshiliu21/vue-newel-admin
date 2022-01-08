@@ -21,8 +21,7 @@
     "vue": "^2.6.10",
     "vue-quill-editor": "^3.0.6",
     "vue-router": "^3.0.7",
-    "vuex": "^3.0.1",
-    "zr-draw-html": "^0.1.5"
+    "vuex": "^3.0.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.9.0",
