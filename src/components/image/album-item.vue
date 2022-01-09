@@ -8,7 +8,7 @@
     {{ item.name }}
     <el-dropdown class="ml-auto">
       <span class="btn btn-light btn-sm border"
-        >{{ item.num }}
+        >{{ item.images_count }}
         <i class="el-icon-arrow-down el-icon--right"></i>
       </span>
       <el-dropdown-menu slot="dropdown">
