@@ -165,7 +165,9 @@
           "
         >
           <el-button-group>
-            <el-button size="mini" :disabled="albumPage === 1">上一页</el-button>
+            <el-button size="mini" :disabled="albumPage === 1"
+              >上一页</el-button
+            >
             <el-button size="mini">下一页</el-button>
           </el-button-group>
         </div>
@@ -177,7 +179,7 @@
             :page-sizes="[100, 200, 300, 400]"
             :page-size="100"
             layout="total, sizes, prev, pager, next, jumper"
-            :total="400"
+            :total="total"
           >
           </el-pagination>
         </div>
@@ -265,11 +267,26 @@ export default {
       currentPage: 1,
       albumPage: 1,
       albumTotal: 0,
+      total: 100,
     };
   },
   computed: {
     albumModelTitle() {
       return this.albumEditIndex > -1 ? "修改相册" : "创建相册";
+    },
+    // 选中相册id
+    img_class_id() {
+      let item = this.albums[this.albumIndex];
+      if (item) {
+        return item.id;
+      } else {
+        return 0;
+      }
+    },
+    // 当前选中相册的图片列表URL
+    getImageListUrl() {
+      console.log(this.img_class_id);
+      return `/admin/imageclass/${this.img_class_id}/image/${this.currentPage}`;
     },
   },
   created() {
@@ -330,41 +347,46 @@ export default {
       item.checkOrder = 0;
     },
     __init() {
-      //   for (var i = 0; i < 20; i++) {
-      //     this.albums.push({
-      //       name: "相册" + i,
-      //       num: Math.floor(Math.random() * 100),
-      //       order: 0,
-      //     });
-      //   }
-      //   for (var i = 0; i < 30; i++) {
-      //     this.imageList.push({
-      //       id: i,
-      //       url: "https://tangzhe123-com.oss-cn-shenzhen.aliyuncs.com/Appstatic/qsbk/demo/datapic/40.jpg",
-      //       name: "图片" + i,
-      //       ischeck: false,
-      //       checkOrder: 0,
-      //     });
-      //   }
+      this.getAlbumList();
+    },
+    getAlbumList() {
+      // 获取相册列
       axios
         .get(`/admin/imageclass/${this.albumPage}`, {
           token: true,
         })
         .then((res) => {
-          console.log("test");
-          console.log(res);
           let {
             data: { list, totalCount },
           } = res.data;
-          console.log(list);
-          console.log(totalCount);
           this.albums = list || [];
           this.albumTotal = totalCount || 0;
+
+          // 获取第一个分类下的图片
+          this.getImageList();
         });
+    },
+    getImageList() {
+      axios.get(this.getImageListUrl, { token: true }).then((res) => {
+        let {
+          data: { list, totalCount },
+        } = res.data;
+        this.imageList = list.map((item) => {
+          return {
+            id: item.id,
+            url: item.url,
+            name: item.name,
+            ischeck: false,
+            checkOrder: 0,
+          };
+        });
+        this.total = totalCount;
+      });
     },
     // 切换相册
     albumChange(index) {
       this.albumIndex = index;
+      this.getImageList();
     },
     // 打开相册修改/创建框
     openAlbumModel(obj) {
