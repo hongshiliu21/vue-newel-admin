@@ -64,7 +64,7 @@
               :active="albumIndex === index"
               @change="albumChange"
               @edit="openAlbumModel"
-              @del="albumDel"
+              @del="albumDel(item)"
             ></album-item>
           </ul>
         </el-aside>
@@ -367,21 +367,23 @@ export default {
         });
     },
     getImageList() {
-      axios.get(this.getImageListUrl, { token: true }).then((res) => {
-        let {
-          data: { list, totalCount },
-        } = res.data;
-        this.imageList = list.map((item) => {
-          return {
-            id: item.id,
-            url: item.url,
-            name: item.name,
-            ischeck: false,
-            checkOrder: 0,
-          };
+      axios
+        .get(this.getImageListUrl, { token: true, loading: true })
+        .then((res) => {
+          let {
+            data: { list, totalCount },
+          } = res.data;
+          this.imageList = list.map((item) => {
+            return {
+              id: item.id,
+              url: item.url,
+              name: item.name,
+              ischeck: false,
+              checkOrder: 0,
+            };
+          });
+          this.total = totalCount;
         });
-        this.total = totalCount;
-      });
     },
     // 切换相册
     albumChange(index) {
@@ -416,12 +418,21 @@ export default {
         return (this.albumModel = false);
       }
       // 追加albums
-      this.albums.unshift({
-        name: this.albumForm.name,
-        order: this.albumForm.order,
-        num: 0,
-      });
-      this.albumModel = false;
+      // this.albums.unshift({
+      //   name: this.albumForm.name,
+      //   order: this.albumForm.order,
+      //   num: 0,
+      // });
+
+      axios
+        .post(`/admin/imageclass`, this.albumForm, {
+          token: true,
+        })
+        .then((res) => {
+          this.$message.success("操作成功！");
+          this.__init();
+          this.albumModel = false;
+        });
     },
     // 修改相册
     albumEdit() {
@@ -429,17 +440,20 @@ export default {
       this.albums[this.albumEditIndex].order = this.albumForm.order;
     },
     // 删除相册
-    albumDel(index) {
+    albumDel(item) {
       this.$confirm("是否删除该相册", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       }).then(() => {
-        this.albums.splice(index, 1);
-        this.$message({
-          message: "删除成功",
-          type: "success",
-        });
+        axios
+          .delete(`/admin/imageclass/${item.id}`, {
+            token: true,
+          })
+          .then((res) => {
+            this.$message.success("删除成功！");
+            this.__init();
+          });
       });
     },
     // 预览图片
