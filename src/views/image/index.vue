@@ -169,10 +169,18 @@
           "
         >
           <el-button-group>
-            <el-button size="mini" :disabled="albumPage === 1"
+            <el-button
+              size="mini"
+              :disabled="albumPage === 1"
+              @click="changeAlbumPage('pre')"
               >上一页</el-button
             >
-            <el-button size="mini">下一页</el-button>
+            <el-button
+              size="mini"
+              :disabled="albumPage == Math.ceil(albumTotal / 10)"
+              @click="changeAlbumPage('next')"
+              >下一页</el-button
+            >
           </el-button-group>
         </div>
         <div style="flex: 1" class="px-2">
@@ -306,6 +314,14 @@ export default {
     this.__init();
   },
   methods: {
+    changeAlbumPage(type) {
+      if (type == "next") {
+        this.albumPage++;
+      } else {
+        this.albumPage--;
+      }
+      this.__init();
+    },
     handleSearch() {
       this.currentPage = 1;
       this.getImageList();
@@ -382,7 +398,6 @@ export default {
           } = res.data;
           this.albums = list || [];
           this.albumTotal = totalCount || 0;
-
           // 获取第一个分类下的图片
           this.getImageList();
         });
@@ -409,6 +424,7 @@ export default {
     // 切换相册
     albumChange(index) {
       this.albumIndex = index;
+      this.currentPage = 1;
       this.getImageList();
     },
     // 打开相册修改/创建框
