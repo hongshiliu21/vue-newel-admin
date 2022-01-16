@@ -12,9 +12,10 @@
             size="mini"
             v-model="searchForm.order"
             style="width: 150px"
+            clearable
           >
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
+            <el-option label="升序" value="desc"></el-option>
+            <el-option label="降序" value="asc"></el-option>
           </el-select>
           <el-input
             class="mr-2"
@@ -22,8 +23,11 @@
             placeholder="输入相册名称"
             v-model="searchForm.keyword"
             style="width: 150px"
+            clearable
           ></el-input>
-          <el-button type="success" size="mini">搜索</el-button>
+          <el-button type="success" size="mini" @click="handleSearch"
+            >搜索</el-button
+          >
         </div>
         <el-button
           type="warning"
@@ -176,8 +180,8 @@
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page="currentPage"
-            :page-sizes="[100, 200, 300, 400]"
-            :page-size="100"
+            :page-sizes="pageSizes"
+            :page-size="pageSize"
             layout="total, sizes, prev, pager, next, jumper"
             :total="total"
           >
@@ -211,13 +215,17 @@
     </el-dialog>
 
     <!-- 上传图片 -->
-    <el-dialog title="上传图片" :visible.sync="uploadModel">
+    <el-dialog title="上传图片" :visible.sync="uploadModel" @close="__init">
       <div class="text-center">
         <el-upload
           class="upload-demo w-100"
           drag
-          action="https://jsonplaceholder.typicode.com/posts/"
+          action="/admin/image/upload"
           multiple
+          :headers="{ token: $store.state.user.token }"
+          name="img"
+          :data="{ img_class_id }"
+          :on-success="uploadSuccess"
         >
           <i class="el-icon-upload"></i>
           <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
@@ -267,7 +275,9 @@ export default {
       currentPage: 1,
       albumPage: 1,
       albumTotal: 0,
-      total: 100,
+      pageSizes: [10, 20, 30, 50, 100],
+      pageSize: 10,
+      total: 0,
     };
   },
   computed: {
@@ -285,14 +295,25 @@ export default {
     },
     // 当前选中相册的图片列表URL
     getImageListUrl() {
-      console.log(this.img_class_id);
-      return `/admin/imageclass/${this.img_class_id}/image/${this.currentPage}`;
+      let other = "";
+      if (this.searchForm.keyword !== "") {
+        other = `&keyword=${this.searchForm.keyword}`;
+      }
+      return `/admin/imageclass/${this.img_class_id}/image/${this.currentPage}?limit=${this.pageSize}&order=${this.searchForm.order}${other}`;
     },
   },
   created() {
     this.__init();
   },
   methods: {
+    handleSearch() {
+      this.currentPage = 1;
+      this.getImageList();
+    },
+    // 未对接数据接口
+    uploadSuccess(response, file, fileList) {
+      console.log(response, file, fileList);
+    },
     // 取消选中
     unChoose() {
       this.imageList.forEach((img) => {
@@ -503,10 +524,15 @@ export default {
       });
     },
     handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
+      // console.log(`每页 ${val} 条`);
+      this.currentPage = 1;
+      this.pageSize = val;
+      this.getImageList();
     },
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
+      // console.log(`当前页: ${val}`);
+      this.currentPage = val;
+      this.getImageList();
     },
   },
 };
