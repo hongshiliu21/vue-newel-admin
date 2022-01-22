@@ -67,6 +67,7 @@
         <el-main
           class="bg-light position-relative"
           style="padding-bottom: 60px"
+          v-loading="loading"
         >
           <!-- 面包屑导航 -->
           <div
@@ -117,10 +118,16 @@ import axios from "axios";
 export default {
   name: "layout",
   mixins: [common],
+  provide() {
+    return {
+      layout: this
+    };
+  },
   data() {
     return {
       // navBar: {},
       bran: [],
+      loading: false,
     };
   },
   watch: {

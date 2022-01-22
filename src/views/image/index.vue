@@ -257,6 +257,7 @@
 import axios from "axios";
 import albumItem from "@/components/image/album-item.vue";
 export default {
+  inject: ["layout"],
   components: {
     albumItem,
   },
@@ -403,6 +404,7 @@ export default {
         });
     },
     getImageList() {
+      this.layout.loading = true;
       axios
         .get(this.getImageListUrl, { token: true, loading: true })
         .then((res) => {
@@ -418,7 +420,11 @@ export default {
               checkOrder: 0,
             };
           });
+          this.layout.loading = false;
           this.total = totalCount;
+        })
+        .catch((err) => {
+          this.layout.loading = false;
         });
     },
     // 切换相册
