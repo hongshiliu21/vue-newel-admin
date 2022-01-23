@@ -404,9 +404,9 @@ export default {
         });
     },
     getImageList() {
-      this.layout.loading = true;
+      this.layout.showLoading();
       axios
-        .get(this.getImageListUrl, { token: true, loading: true })
+        .get(this.getImageListUrl, { token: true })
         .then((res) => {
           let {
             data: { list, totalCount },
@@ -420,11 +420,11 @@ export default {
               checkOrder: 0,
             };
           });
-          this.layout.loading = false;
+          this.layout.hideLoading();
           this.total = totalCount;
         })
         .catch((err) => {
-          this.layout.loading = false;
+          this.layout.hideLoading();
         });
     },
     // 切换相册
@@ -479,8 +479,18 @@ export default {
     },
     // 修改相册
     albumEdit() {
-      this.albums[this.albumEditIndex].name = this.albumForm.name;
-      this.albums[this.albumEditIndex].order = this.albumForm.order;
+      let item = this.albums[this.albumEditIndex];
+      axios
+        .post(`/admin/imageclass/${item.id}`, this.albumForm, {
+          token: true,
+        })
+        .then((res) => {
+          const { data } = res;
+          if (data.data) {
+            this.$message.success("操作成功！");
+            this.__init();
+          }
+        });
     },
     // 删除相册
     albumDel(item) {

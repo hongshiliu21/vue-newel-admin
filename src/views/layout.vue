@@ -172,6 +172,12 @@ export default {
     this.__initNavBar();
   },
   methods: {
+    showLoading(){
+      this.loading = true;
+    },
+    hideLoading(){
+      this.loading = false;
+    },
     __initNavBar() {
       let r = localStorage.getItem("navActive");
       if (r) {
